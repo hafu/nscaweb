@@ -110,8 +110,8 @@ class HtmlContent:
 									package = self.construct_package(name=name,queueDefinitions=self.queueDefinitions,line=line)
 									try:
 										self.submitListener.dump(package)
-									except Exception as e:
-										self.logging.put(["Warning","Queue size limit reached. Data purged. %s" % e])
+									except Exception:
+										self.logging.put(["Warning","Queue size limit reached. Data purged."])
 										continue
 						self.logging.put(["Normal","%s items dumped into the broadcast queue for user %s from IP %s."%(counter,form['username'],cherrypy.request.remote.ip)])
 					elif len(args)==1:

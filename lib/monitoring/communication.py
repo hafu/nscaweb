@@ -233,9 +233,9 @@ class OutputQueue(threading.Thread):
 							queue_size=queue_size,
 							queue_bytes=queue_bytes,
 							logger=self.logger,
-+							key_file=key_file,
-+							cert_file=cert_file,
-+							ca_certs=ca_file)			
+							key_file=key_file,
+							cert_file=cert_file,
+							ca_certs=ca_file)			
 		connector.join(30)
 		if connector.isAlive() == True:
 			self.logger.error('A timeout occurred writing to location %s.'%(location))

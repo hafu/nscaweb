@@ -31,6 +31,7 @@ import urllib2
 from xml.etree import ElementTree
 from hashlib import md5
 import sys
+from nscaweb.httpsclientauth import HTTPSClientAuthHandler
 
 class LoadBalance():
     '''Accepts a list of destinations (ip/hostnames) and chooses based upon self.style an ip address.
@@ -151,6 +152,9 @@ class OutputQueue(threading.Thread):
         self.username=destination.get('username',None)
         self.password=destination.get('password',None)
         self.token=destination.get('token',None)
+        self.key_file=destination.get('sslkeyfile',None)
+        self.cert_file=destination.get('sslcertfile',None)
+        self.ca_file=destination.get('sslcafile',None)
         self.timeout=timeout
         self.retries=retries
         self.chunks=chunks
@@ -177,7 +181,10 @@ class OutputQueue(threading.Thread):
                             data=bulk,
                             size=len(bulk),
                             queue_size=self.queue.qsize(),
-                            queue_bytes=self.get_size()
+                            queue_bytes=self.get_size(),
+                            key_file=self.key_file,
+                            cert_file=self.cert_file,
+                            ca_file=self.ca_file
                             ) != True:
                     self.logger.info('Setting submitlock and wait for %s seconds.'%(self.submittimer))
                     self.submitlock=True
@@ -188,7 +195,7 @@ class OutputQueue(threading.Thread):
             self.submitlock=False
             self.submittimer=1
             time.sleep(0.5)
-    def __submit(self,type=None,locations=None,data=None,size=None,queue_size=None,queue_bytes=None):
+    def __submit(self,type=None,locations=None,data=None,size=None,queue_size=None,queue_bytes=None,key_file=None,cert_file=None,ca_file=None):
         location = self.loadbalance.choose(locations)
         if type == 'file':
             connector = DeliverFile(    location=location,
@@ -209,6 +216,9 @@ class OutputQueue(threading.Thread):
                             data=data,
                             username=self.username,
                             password=self.password,
+                            key_file=key_file,
+                            cert_file=cert_file,
+                            ca_certs=ca_file,
                             size=size,
                             queue_size=queue_size,
                             queue_bytes=queue_bytes,
@@ -219,6 +229,9 @@ class OutputQueue(threading.Thread):
                             username=self.username,
                             password=self.password,
                             token=self.token,
+                            key_file=key_file,
+                            cert_file=cert_file,
+                            ca_certs=ca_file,
                             size=size,
                             queue_size=queue_size,
                             queue_bytes=queue_bytes,
@@ -301,7 +314,7 @@ class DeliverNamedPipe(threading.Thread):
             self.logger.error("Error submitting data to %s. Reason: %s. Delivery queue left %s items. Size: %s bytes"%(self.location,error,self.queue_size,self.queue_bytes))
             self.status=False
 class DeliverNscaweb(threading.Thread):
-    def __init__(self,location=None,data=None,username=None,password=None,size=None,queue_size=None,queue_bytes='0',logger=None):
+    def __init__(self,location=None,data=None,username=None,password=None,key_file=None,cert_file=None,ca_certs=None,size=None,queue_size=None,queue_bytes='0',logger=None):
         threading.Thread.__init__(self)
         self.location=location
         self.data=data
@@ -312,8 +325,7 @@ class DeliverNscaweb(threading.Thread):
         self.queue_bytes=queue_bytes
         self.logger=logger
         self.status=False
-        self.opener = urllib2.build_opener()
-        self.opener = urllib2.build_opener()
+        self.opener = urllib2.build_opener(HTTPSClientAuthHandler(key_file=key_file, cert_file=cert_file, ca_certs=ca_certs))
         self.opener.addheaders = [('User-agent', 'NSCAweb')]
         self.daemon=True
         self.start()
@@ -332,7 +344,7 @@ class DeliverNscaweb(threading.Thread):
             self.logger.error('Error submitting data to NSCAweb %s. Reason: %s. Delivery queue left %s items. Size: %s bytes'%(self.location,error,self.queue_size,self.queue_bytes))
             self.status=False
 class DeliverNrdp(threading.Thread):
-    def __init__(self,location=None,data=None,username=None,password=None,token=None,size=None,queue_size=None,queue_bytes='0',logger=None):
+    def __init__(self,location=None,data=None,username=None,password=None,token=None,key_file=None,cert_file=None,ca_certs=None,size=None,queue_size=None,queue_bytes='0',logger=None):
         threading.Thread.__init__(self)
         self.location=location
         self.data=data
@@ -344,8 +356,7 @@ class DeliverNrdp(threading.Thread):
         self.queue_bytes=queue_bytes
         self.logger=logger
         self.status=False
-        self.opener = urllib2.build_opener()
-        self.opener = urllib2.build_opener()
+        self.opener = urllib2.build_opener(HTTPSClientAuthHandler(key_file=key_file, cert_file=cert_file, ca_certs=ca_certs))
         self.opener.addheaders = [('User-agent', 'NSCAweb')]
         self.daemon=True
         self.start()

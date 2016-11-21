@@ -158,6 +158,9 @@ class HtmlContent():
         package={'destination':{
             'type' : queueDefinitions[name]['type'],
             'locations' : queueDefinitions[name]['locations'].split(','),
+            'sslkeyfile' : queueDefinitions[name].get('sslkeyfile',None),
+            'sslcertfile' : queueDefinitions[name].get('sslcertfile',None),
+            'sslcafile' : queueDefinitions[name].get('sslcafile',None),
             'username' : queueDefinitions[name].get('username',None),
             'password' : queueDefinitions[name].get('password',None),
             'token' : queueDefinitions[name].get('token',None)
@@ -260,6 +263,9 @@ class NamedPipe(threading.Thread):
         package={'destination':{
             'type' : queueDefinitions[name]['type'],
             'locations' : queueDefinitions[name]['locations'].split(','),
+            'sslkeyfile' : queueDefinitions[name].get('sslkeyfile',None),
+            'sslcertfile' : queueDefinitions[name].get('sslcertfile',None),
+            'sslcafile' : queueDefinitions[name].get('sslcafile',None),
             'username' : queueDefinitions[name].get('username',None),
             'password' : queueDefinitions[name].get('password',None),
             'token' : queueDefinitions[name].get('token',None)

@@ -1,15 +1,15 @@
-<aside class="warning">
-NSCAweb has been abandoned.
-It will not be further developed.
-Bug reports and pull requests will not be followed up on.
-</aside>
+.. caution::
+    NSCAweb has been abandoned.
+    It will not be further developed.
+    Bug reports and pull requests will not be followed up on.
 
-<aside class="notice">
-This branch supports authentication via client certificates. Therefore a more
-complex setup is needed. See commit message: 2c3fda6afc1b654c7314923394e759384a0f67c3
 
-* dev-ssl-cert-auth -> current development branch, maybe not tested
-</aside>
+.. hint::
+    This branch supports authentication via client certificates. Therefore a more
+    complex setup is needed. See commit message: 2c3fda6afc1b654c7314923394e759384a0f67c3
+
+    ``dev-ssl-cert-auth`` -> current development branch, maybe not tested
+
 
 
 
